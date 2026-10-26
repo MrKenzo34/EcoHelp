@@ -40,7 +40,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework_simplejwt',
-    'corsheaders',
+    'cors headers',
     'drf_spectacular',
     'core',
 ]
@@ -145,11 +145,8 @@ REST_FRAMEWORK_EXTENSIONS = {
     'DEFAULT_USE_OVERRIDE_SETTINGS': True
 }
 
-# settings.py faylining eng pastki qismi:
+STATIC_URL = '/static/'
 
-STATIC_URL = 'static/'
-
-# Mana bu yerni o'zingiz qo'shasiz:
 import os
 
 MEDIA_URL = '/media/'
