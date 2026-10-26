@@ -40,7 +40,7 @@ INSTALLED_APPS = [
 
     'rest_framework',
     'rest_framework_simplejwt',
-    'cors headers',
+    'corsheaders',
     'drf_spectacular',
     'core',
 ]
