@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoHelp - Desktop Application</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 font-sans select-none">
+
+    <!-- Dastur Sarlavhasi (Header) -->
+    <nav class="bg-emerald-600 text-white p-4 shadow-md flex justify-between items-center">
+        <h1 class="text-2xl font-bold flex items-center gap-2">🌱 EcoHelp Desktop</h1>
+        <span id="status-badge" class="bg-emerald-800 text-xs px-3 py-1 rounded-full">Serverga ulanmoqda...</span>
+    </nav>
+
+    <!-- Asosiy Tarkib -->
+    <div class="container mx-auto mt-6 p-4 grid grid-cols-1 md:grid-cols-2 gap-6">
+
+        <!-- Kategoriyalar Bo'limi -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <h2 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">📂 Kategoriyalar</h2>
+
+            <form id="category-form" class="flex gap-2 mb-4">
+                <input type="text" id="cat-name" placeholder="Kategoriya nomi..." required
+                    class="flex-1 border border-gray-300 p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-emerald-500">
+                <button type="submit"
+                    class="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-semibold transition">
+                    Qo'shish
+                </button>
+            </form>
+
+            <ul id="category-list" class="space-y-2 max-h-60 overflow-y-auto">
+                <li class="text-gray-400 text-sm">Yuklanmoqda...</li>
+            </ul>
+        </div>
+
+        <!-- E'lonlar Bo'limi -->
+        <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-200">
+            <h2 class="text-xl font-bold mb-4 text-gray-800 border-b pb-2">📢 E'lonlar</h2>
+            <div id="announcement-list" class="space-y-3 max-h-60 overflow-y-auto">
+                <p class="text-gray-400 text-sm">E'lonlar yuklanmoqda...</p>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        const API_URL = 'https://ecohelp-4.onrender.com/api/v1';
+
+        async function fetchCategories() {
+            const badge = document.getElementById('status-badge');
+            const catList = document.getElementById('category-list');
+
+            try {
+                const response = await fetch(`${API_URL}/categories/`);
+                if (response.ok) {
+                    badge.innerText = '● Server Onlayn';
+                    badge.className = 'bg-green-500 text-xs px-3 py-1 rounded-full';
+
+                    const data = await response.json();
+                    catList.innerHTML = '';
+
+                    if (data.length === 0) {
+                        catList.innerHTML = '<li class="text-gray-400">Hali kategoriyalar yo\'q. Yuqorida qo\'shing!</li>';
+                    } else {
+                        data.forEach(cat => {
+                            catList.innerHTML += `
+                                <li class="bg-gray-50 p-3 rounded-lg border border-gray-200 flex justify-between items-center">
+                                    <span class="font-medium text-gray-700">${cat.name}</span>
+                                    <span class="text-xs text-gray-400">ID: ${cat.id}</span>
+                                </li>
+                            `;
+                        });
+                    }
+                } else {
+                    throw new Error();
+                }
+            } catch (error) {
+                badge.innerText = '✕ Serverga ulanmadi';
+                badge.className = 'bg-red-500 text-xs px-3 py-1 rounded-full';
+                catList.innerHTML = '<li class="text-red-500">Kategoriyalarni yuklab bo\'lmadi.</li>';
+            }
+        }
+
+        document.getElementById('category-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const input = document.getElementById('cat-name');
+            const name = input.value;
+
+            try {
+                const response = await fetch(`${API_URL}/categories/`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: name })
+                });
+
+                if (response.ok) {
+                    input.value = '';
+                    fetchCategories();
+                } else {
+                    alert('Xatolik yuz berdi!');
+                }
+            } catch (error) {
+                alert('Server bilan aloqa yo\'q!');
+            }
+        });
+
+        fetchCategories();
+    </script>
+</body>
+</html>
